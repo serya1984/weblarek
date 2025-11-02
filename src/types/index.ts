@@ -1,4 +1,5 @@
 export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
+export type Payment = 'CARD' | 'CASH'
 
 export interface IApi {
     get<T extends object>(uri: string): Promise<T>;
