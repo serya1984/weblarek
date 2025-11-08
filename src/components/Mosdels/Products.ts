@@ -13,9 +13,8 @@ export class Products {
     return this.products;
   }
 
-  getItem(id: string) {
-    const item = this.products.find((item) => item.id === id);
-    return item;
+  getItem(id: string): IProduct | undefined {
+  return this.products.find((item) => item.id === id); 
   }
 
   setSavedItem(product: IProduct) {

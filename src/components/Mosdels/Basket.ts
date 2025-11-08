@@ -30,7 +30,7 @@ export class Basket {
     }, 0);
   }
 
-  getProductsCount() {
+  getProductsCount(): number {
     return this.itemsProducts.length;
   }
 

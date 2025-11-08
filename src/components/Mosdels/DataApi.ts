@@ -16,11 +16,6 @@ export class DataApi {
   }
 
  createOrder(order: ICreateOrder): Promise<IOrderComplite> {
-    return this.apiService.post<IOrderComplite>('/order', order, 'POST').then((response) => {
-      return {
-        id: response.id,
-        total: response.total
-      }
-    })
+    return this.apiService.post<IOrderComplite>('/order', order, 'POST')
   }
 }
