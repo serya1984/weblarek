@@ -19,8 +19,8 @@ export interface IProduct {
   description: string;
 }
 
-export interface IBuser {
-  buyerPayment: TPayment;
+export interface IBuyer {
+  buyerPayment: TPayment | string
   buyerEmail: string;
   buyerPhone: string;
   buyerAddress: string;
@@ -31,7 +31,7 @@ export interface IDataApi {
   items: IProduct[];
 }
 
-export interface IBuserError {
+export interface IBuyerError {
   buyerPayment: string;
   buyerEmail: string;
   buyerPhone: string;
@@ -39,7 +39,7 @@ export interface IBuserError {
 }
 
 export interface ICreateOrder {
-  payment: TPayment;
+  payment: TPayment | string;
   email: string;
   phone: string;
   address: string;
@@ -49,4 +49,8 @@ export interface ICreateOrder {
 export interface IOrderComplite {
   id: string;
   total: number;
+}
+
+export interface ICardActions {
+  onClick(): void;
 }

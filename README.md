@@ -211,3 +211,128 @@ export interface IOrderComplite {
 
 `getProducts(): Promise<IProduct[]>` - получение данных с сервера
 `createOrder(order: ICreateOrder): Promise<IOrderComplite>` отправка данных заказа на сервер
+
+### Отображение 
+
+#### класс Header extends Component(IheaderData) 
+
+Поля класса: 
+`headerCounter: HTMLElement` - html элемент отображающий количество товаров в корзине
+`headerButton: HTMLButtonElement` - кнопка открывающая козину
+
+Методы класса: 
+`set counter(value: number)` - сеттер который меняет значение колличества товаров в козине
+
+#### класс Gallery extends Component(IGalleryData)
+
+Поля класса: 
+`catalogElement: HTMLElement` - элемент каталога товаров
+
+Методы класса: 
+`set catalog(items: HTMLElement[])` - сеттер который добавляет элементы каталога в каталог
+
+#### класс ModalWindow extends Component(IModalWindow) 
+
+Поля класса: 
+`modalContent: HTMLElement` - контейнер модального окна в котором отображаеться информация о товаре 
+`modalCloseButton: HTMLButtonelement` - кнопка закрытия модального окна
+
+Методы класса: 
+`set content(content: HTMLElement)` - сеттер который добавляет контент в модальное окно
+
+#### класс CardView extends Component(ICardView)
+
+Поля класса: 
+`cardTitle: HTMLElement` - элемент разметки с названием товара в карточке
+`cardPrice: HTMLElement` - элемент разметки со стоимостью товара
+
+Методы класса: 
+`set title(value: string)` - сеттер который добавляет название товара в соответсевующий html элемент
+`set price(value: number)` - сеттер который добавляет стоимость в соответствующий html элемент
+
+#### класс GalleryCardView extends CardView(IGalleryView) 
+
+Поля класса: 
+`cardCategory: HTMLElement` - элемент разметки с категорией товара
+`cardImage: HTMLImagelement` - элемент разметки с картинкой товара
+
+Методы класса:
+`set category(value: string)` - сеттер который добавляет значение в элемент разметки с категорией товара
+`set image(value: string)` - сеттер который добавляет в разметку адрес картики товара   
+
+#### класс ModalCardView extends CardView(IModalCardView)
+
+Поля класса:
+`cardCategory: HTMLElement` - элемент разметки с категорией товара
+`cardImage: HTMLImagelement` - элемент разметки с картинкой товара
+`cardDescription: HTMLElement` - элемент разметки с описанием товара
+`cardButton: HTMLElement` - кнопка в модальном окне
+
+Методы класса: 
+`set category(value: string)` - сеттер который добавляет значение в элемент разметки с категорией товара
+`set image(value: string)` - сеттер который добавляет в разметку адрес картики товара  
+`set description(value: string)` - сеттер который добавляет значение с описанием товара в элемент разметки
+
+#### класс BasketView extends CardView(IBasketCardView) 
+
+Поля класса: 
+`basketCardIndex: HTMLElement` - элемент разметки с индексом товара в корзине
+`basketButton: HTMLButtonElement` - кнопка удаления выбранного товара из корзины
+
+Методы класса: 
+`set index(value: number)` - добавляет значение индекса товара в корзине в элемент разметки
+
+#### класс BasketView extends Component(IBasketView)
+
+Поля класса:
+`bascetItem: HTMLElement` - элемент разметки со списком товаров в корзине
+`basketTotalPrice: HTMLElement` - элемент разметки с общей стоимостью товаранаходящегося в корзине
+
+Методы класса:
+`set list(items: HTMLElement[] | string)` - добавляет список выбранных товаров в корзине в элемент разметки 
+`set totalPrice(value: number)` - добавляет значение общей стоимости товаров в корзине
+
+#### класс Form extends Component(IForm) 
+
+Поля класса: 
+`formError: HTMLElement` - элмент разметки с текстом ошибки в форме
+`formButton: HTMLButtonElement` - кнопка в форме
+
+Методы класса:
+`set error(value: string)` - добавляет текст ошибки в элемент разметки
+`set buttonDesabled(error: boolean)` - в зависимости от наличия ошибки в форме делает кнопку активной или не активной
+
+#### класс OrderForm extends Form(IOrderForm)
+
+Поля класса: 
+`cardButton: HTMLButtonElement` - кнопка оплаты товара картой
+`cashButton: HTMLButtonElement` - кнопка оплаты товара при получении
+`inputAddres: HTMLInputElement` - строка ввода адреса доставки
+`orderButton: HTMLButtonElement` - кнопка перехода к следующей форме
+
+Методы класса:
+`set addres(value: string)` - добавляет значение адреса доставки в элемент разметки
+
+#### класс ContactForm extends Form(IContactForm)
+
+Поля класса:
+`inputEmail: HTMLInputElement` - строка ввода email покупателя
+`inputPhone: HTMLInputElement` - сетрока ввода телефона покупателя
+`buttonSubmit: HTMLButtonElement` - кнопка отправки товара
+
+Методы класса: 
+`set email(value: string)` - сеттер добавляет значение email в элемент разметки
+`set phone(value: string)` -  сеттер добавляет значение номера телефона в элемент разметки
+
+#### класс OrderSuccess extends Component(IOrderSuccess)
+
+Поля класса: 
+`orderTotalPrice: HTMLElement` - общая стоимость заказа
+`orderButton: HTMLButtonElement` - кнопка завершения оформления заказа
+
+Методы класса:
+`set totalPrice(value: string)` - сеттер добавляет общую стоимость заказа после оформления 
+
+
+
+

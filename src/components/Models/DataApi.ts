@@ -1,5 +1,10 @@
-import { IApi, ICreateOrder, IDataApi, IOrderComplite, IProduct } from "../../types";
-
+import {
+  IApi,
+  ICreateOrder,
+  IDataApi,
+  IOrderComplite,
+  IProduct,
+} from "../../types";
 
 export class DataApi {
   private apiService: IApi;
@@ -15,7 +20,7 @@ export class DataApi {
     });
   }
 
- createOrder(order: ICreateOrder): Promise<IOrderComplite> {
-    return this.apiService.post<IOrderComplite>('/order', order, 'POST')
+  createOrder(order: ICreateOrder): Promise<IOrderComplite> {
+    return this.apiService.post<IOrderComplite>("/order", order, "POST");
   }
 }

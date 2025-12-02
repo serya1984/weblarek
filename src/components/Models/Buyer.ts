@@ -1,54 +1,59 @@
-import { IBuser, IBuserError, TPayment } from "../../types";
+import { IBuyer, IBuyerError, TPayment } from "../../types";
+import { IEvents } from "../base/Events";
 
 export class Buyer {
-  protected buyerPayment: TPayment = "CARD";
+  protected buyerPayment: TPayment | string = "";
   protected buyerEmail: string = "";
   protected buyerPhone: string = "";
   protected buyerAddress: string = "";
 
-  constructor() {}
+  constructor(protected events: IEvents) {}
 
   setPayment(payment: TPayment) {
     this.buyerPayment = payment;
+    this.events.emit("buyer:changed-order");
   }
 
   setEmail(email: string) {
     this.buyerEmail = email;
+    this.events.emit("buyer:changed-contacts");
   }
 
   setPhone(phone: string) {
     this.buyerPhone = phone;
+    this.events.emit("buyer:changed-contacts");
   }
 
   setAddress(address: string) {
     this.buyerAddress = address;
+    this.events.emit("buyer:changed-order");
   }
 
-  getData(): IBuser {
+  getData(): IBuyer {
     return {
       buyerPayment: this.buyerPayment,
+      buyerAddress: this.buyerAddress,
       buyerEmail: this.buyerEmail,
       buyerPhone: this.buyerPhone,
-      buyerAddress: this.buyerAddress,
     };
   }
 
-  validate(): IBuserError {
-    const errors: IBuserError = {
+  validate(): IBuyerError {
+    const errors: IBuyerError = {
       buyerPayment: "",
+      buyerAddress: "",
       buyerEmail: "",
       buyerPhone: "",
-      buyerAddress: "",
     };
 
     if (!this.buyerPayment) {
       errors.buyerPayment = "Способ оплаты не выбран";
+    } else if (!this.buyerAddress) {
+      errors.buyerAddress = "Адрес не введён";
     } else if (!this.buyerEmail) {
       errors.buyerEmail = "Email не введён";
     } else if (!this.buyerPhone) {
       errors.buyerPhone = "Телефон не ввёдён";
-    } else if (!this.buyerAddress) {
-      errors.buyerAddress = "Адрес не введён";
     }
     return errors;
   }
