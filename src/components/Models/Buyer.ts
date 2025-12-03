@@ -57,4 +57,10 @@ export class Buyer {
     }
     return errors;
   }
+  clearDataBuyer() {
+    this.buyerPayment = "";
+    this.buyerEmail = "";
+    this.buyerPhone = "";
+    this.buyerAddress = "";
+  }
 }

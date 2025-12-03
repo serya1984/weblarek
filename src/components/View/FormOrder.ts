@@ -14,7 +14,7 @@ export class FormOrder extends Form<IFormOrder> {
     protected formButtonOrder: HTMLButtonElement;
 
     constructor(container: HTMLElement, protected events: IEvents) {
-       super(container, events)
+       super(container)
 
        this.formCardButton = ensureElement('[name="card"]', this.container) as HTMLButtonElement;
        this.formCashButton = ensureElement('[name="cash"]', this.container) as HTMLButtonElement;
@@ -36,7 +36,6 @@ export class FormOrder extends Form<IFormOrder> {
   }
 
   set activeButton(value: boolean) {
-    console.log(value)
     if(value === true) {
         this.formButtonOrder.removeAttribute('disabled')
     }

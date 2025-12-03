@@ -20,7 +20,7 @@ export class BasketView extends Component<IBasketView> {
     this.basketButton = ensureElement(".basket__button", this.container);
   
     this.disableButton()
-    this.basketButton.addEventListener('click', () => this.events.emit('product:design'))
+    this.basketButton.addEventListener('click', () => this.events.emit('checkout'))
   }
 
   set list(value: HTMLElement[]) {

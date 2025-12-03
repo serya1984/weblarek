@@ -22,11 +22,11 @@ export class ModalWindow extends Component<IModalWindow> {
     this.modalCloseButton.addEventListener("click", () =>
       this.events.emit("close:window")
     );
-    this.container.addEventListener('click', (evt) => { 
-      if(evt.target === this.container) {
-        this.events.emit("close:window")
+    this.container.addEventListener("click", (evt) => {
+      if (evt.target === this.container) {
+        this.events.emit("close:window");
       }
-    })
+    });
   }
 
   set content(value: HTMLElement) {

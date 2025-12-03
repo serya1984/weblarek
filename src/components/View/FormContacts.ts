@@ -13,7 +13,7 @@ export class FormContacts extends Form<IFormContacts> {
   protected formButtonSubmit: HTMLButtonElement;
 
   constructor(container: HTMLElement, protected events: IEvents) {
-    super(container, events);
+    super(container);
     this.formInputEmail = ensureElement(
       '[name="email"]',
       this.container

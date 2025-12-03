@@ -42,16 +42,22 @@ export class ModalCardView extends CardView<IModalCardView> {
       );
     }
   }
+
   set description(value: string) {
     this.cardDescription.textContent = value;
   }
 
+  setButtonDisabled() {
+    this.addButton.textContent = "Недоступно";
+    this.addButton.setAttribute("disabled", "disabled");
+  }
+
   setToBasketButton() {
- this.addButton.textContent = 'Купить';
+    this.addButton.textContent = "Купить";
   }
 
   setFromBasketButton() {
- this.addButton.textContent = 'Удалить из корзины';
+    this.addButton.textContent = "Удалить из корзины";
   }
 
   setButtonListener(actions: ICardActions) {

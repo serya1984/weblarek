@@ -1,6 +1,5 @@
 import { Products } from "./components/Models/Products";
 import "./scss/styles.scss";
-import { apiProducts } from "./utils/data";
 import { Basket } from "./components/Models/Basket";
 import { Buyer } from "./components/Models/Buyer";
 import { DataApi } from "./components/Models/DataApi";
@@ -36,30 +35,6 @@ const formOrder = new FormOrder(cloneTemplate("#order"), events);
 const formContacts = new FormContacts(cloneTemplate("#contacts"), events);
 const orderSuccess = new OrderSuccess(cloneTemplate("#success"), events);
 
-products.setItems(apiProducts.items);
-const firstItem = apiProducts.items[0];
-const secondItem = apiProducts.items[1];
-console.log("Массив товаров из каталога", products.getItems());
-console.log("Второй товар из массива", products.getItem(secondItem.id));
-products.setSavedItem(secondItem);
-console.log(
-  "Получение товара для подробного отображения",
-  products.getSavedItem()
-);
-
-basket.addProduct(firstItem);
-basket.addProduct(secondItem);
-console.log("Получение массива товаров", basket.getItemsProducts());
-console.log("Общее колличество товаров в козине", basket.getProductsCount());
-console.log("Общая цена всех продуктов в корзине", basket.getTotalPrice());
-console.log(
-  "Проверка наличия товара в козине",
-  basket.hasProduct(secondItem.id)
-);
-basket.removeProduct(firstItem.id);
-console.log(basket.getItemsProducts());
-basket.clearBasket();
-
 const api = new Api(API_URL);
 const dataApi = new DataApi(api);
 
@@ -81,6 +56,10 @@ events.on("card:select", (product: IProduct) => {
 
 function getModelCardContent(product: IProduct): HTMLElement {
   const modalCardView = new ModalCardView(cloneTemplate("#card-preview"));
+
+  if (product.price === null) {
+    modalCardView.setButtonDisabled();
+  }
 
   if (basket.hasProduct(product.id)) {
     modalCardView.setFromBasketButton();
@@ -105,6 +84,7 @@ function getModelCardContent(product: IProduct): HTMLElement {
 
   return modalCardView.render(product);
 }
+
 events.on("product:save", () => {
   const product = products.getSavedItem();
 
@@ -129,12 +109,14 @@ events.on("product:select", () => {
   if (getProduct !== undefined) {
     basket.addProduct(getProduct);
   }
+  modalWindow.closeModalWindow();
 });
 
 events.on("product:unselect", () => {
   const getProduct = products.getSavedItem();
   if (getProduct !== undefined) {
     basket.removeProduct(getProduct.id);
+    modalWindow.closeModalWindow();
   }
 });
 
@@ -170,8 +152,20 @@ events.on("itemsProducts:changed", (args: { countItems: number }) => {
   }
 });
 
-events.on("product:design", () => {
-  const content = formOrder.render();
+events.on("checkout", () => {
+  const buyerData = buyer.getData();
+    const error = buyer.validate();
+  const errorString = error.buyerPayment + error.buyerAddress;
+   const isEmptyOrder = (buyerData.buyerAddress + buyerData.buyerPayment === '');
+
+  const formData = {
+    payment: buyerData.buyerPayment,
+    address: buyerData.buyerAddress,
+    error: isEmptyOrder ? '' : errorString,
+    activeButton: errorString === '',
+  };
+  
+  const content = formOrder.render(formData);
   modalWindow.render({ content });
 });
 
@@ -202,7 +196,20 @@ events.on("inputAddressValue:changed", (data: { input: string }) => {
 });
 
 events.on("buttonOrder:click", () => {
-  const content = formContacts.render();
+  const buyerData = buyer.getData();
+   const error = buyer.validate();
+
+  const errorString = error.buyerEmail + error.buyerPhone;
+  const isEmptyContacts = (buyerData.buyerEmail + buyerData.buyerPhone === '');
+
+  const formData = {
+    email: buyerData.buyerEmail,
+    phone: buyerData.buyerPhone,
+    error: isEmptyContacts ? '' : errorString,
+    activeButton: errorString === '',
+  };
+
+  const content = formContacts.render(formData);
   modalWindow.render({ content });
 });
 
@@ -254,5 +261,6 @@ events.on("buttonSubmit:click", () => {
 
 events.on("order:completed", () => {
   basket.clearBasket();
+  buyer.clearDataBuyer();
   modalWindow.closeModalWindow();
 });
