@@ -19,7 +19,6 @@ export class BasketView extends Component<IBasketView> {
     this.basketTotalPrice = ensureElement(".basket__price", this.container);
     this.basketButton = ensureElement(".basket__button", this.container);
   
-    this.disableButton()
     this.basketButton.addEventListener('click', () => this.events.emit('checkout'))
   }
 
@@ -27,14 +26,13 @@ export class BasketView extends Component<IBasketView> {
     this.basketList.replaceChildren(...value);
   }
   set totalPrice(value: number) {
-    this.basketTotalPrice.textContent = String(value);
+    this.basketTotalPrice.textContent = `${String(value)} синапсов`;
   }
-
-  disableButton() {
-    this.basketButton.setAttribute('disabled', 'disabled')
-  }
-
-  enableButton() {
-    this.basketButton.removeAttribute('disabled')
+    set activeButton(value: boolean) {
+    if (value === true) {
+      this.basketButton.removeAttribute("disabled");
+    } else {
+      this.basketButton.setAttribute("disabled", "disabled");
+    }
   }
 }

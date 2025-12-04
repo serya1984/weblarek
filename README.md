@@ -152,7 +152,7 @@ export interface IOrderComplite {
 #### Класс Products
 
 Отвечает за хранение товаров которые можно купить в приложении
-В конструктор передаёться массив дпнных `constructor(items: Partial<IPoduct[]>)` полученный от сервера.
+В конструктор передаёться брокер событий `constructor(protected events: IEvents) {}`
 
 Поля класса
 `products: IProduct[]` - поле хранит массив продуктов
@@ -167,6 +167,7 @@ export interface IOrderComplite {
 `getSavedItem(): IProduct | undefined` - предназначен для получения товара для его подробного отображения
 
 #### Класс Basket
+ `constructor(protected events: IEvents) {}` - принимает в конструктор брокер событий
 
 Хранит массив выбранных покупателем товаров для покупки:
 `itemsProduct: IProduct[]`
@@ -182,13 +183,13 @@ export interface IOrderComplite {
 
 #### Класс Buyer
 
-`constructor()`
+`constructor(protected events: IEvents) {}` - принимает в конструктор брокер событий
 
 Поля класса:
-`payment: Payment` - вид оплаты
-`email: string` - email покупателя
-`phone: string` - телефон покупателя
-`addres: string` - адрес доставки
+`buyerPayment: TPayment | string = "";` - вид оплаты
+`buyerEmail: string = "";` - email покупателя
+`buyerPhone: string = "";` - телефон покупателя
+`buyerAddress: string = ""` - адрес доставки
 
 Методы класса:
 
@@ -198,6 +199,7 @@ export interface IOrderComplite {
 `setAddress(address: string)` - сохраняет адрес доставки
 `getData(): IBuser` - получение всех данных покупателя
 `validate(): IBuserError` - проверяет данные покупателя
+`clearDataBuyer()` - очистка данных покупателя
 
 ### Слой коммуникации
 
@@ -226,6 +228,7 @@ export interface IOrderComplite {
 `set counter(value: number)` - сеттер который меняет значение колличества товаров в козине
 
 #### класс Gallery extends Component(IGalleryData)
+`constructor(container: HTMLElement)` - принимает в конструктор котейнер
 
 Поля класса: 
 `protected catalogElement: HTMLElement` - элемент каталога товаров
@@ -268,7 +271,7 @@ export interface IOrderComplite {
 `set image(value: string)` - сеттер который добавляет в разметку адрес картики товара   
 
 #### класс ModalCardView extends CardView(IModalCardView)
-`constructor(container: HTMLElement)` - принимает в конструктор контейнер
+`constructor(container: HTMLElement, protected events: IEvents)` - принимает в конструктор контейнер и брокер событий
 
 Поля класса:
 `cardCategory: HTMLElement` - элемент разметки с категорией товара
@@ -280,9 +283,8 @@ export interface IOrderComplite {
 `set category(value: string)` - сеттер который добавляет значение в элемент разметки с категорией товара
 `set image(value: string)` - сеттер который добавляет в разметку адрес картики товара  
 `set description(value: string)` - сеттер который добавляет значение с описанием товара в элемент разметки
-`setButtonDisabled()` - метод которы делает кнопку недоступной
-`setToBasketButton()` - мтод который добавляет кнопке надпись 'Купить' в случае если товара нет в корзине
-`setFromBasketButton()` - мтод который добавляет кнопке надпись 'Удалить из корзины' в случае если товар уже есть в корзине
+`set activeButton(value: boolean)` - делает кнопку не активной
+`set buttonText(value: string` - добавляет текст кнопке
 `setButtonListener(actions: ICardActions)` - метод который принимает объект actions при клике по кнопке `addButton`
 
 #### класс BasketView extends CardView(IBasketCardView) 
@@ -296,8 +298,7 @@ export interface IOrderComplite {
 Методы класса: 
 `set list(value: HTMLElement[])` - добавляет элемент списка товаров в список товаров в корзине
 `set totalPrice(value: number)` - добавляет значение общей стоимости товаров в корзине в элемент разметки
-`disableButton()` - делает кнопку 'Оформить' в козине не доступной если список товаров пустой
-`enableButton()` - делает кнопку 'Оформить' в козине доступной если в корзину добавлен товар
+`set activeButton(value: boolean)` - делае кнопку не активной
 
 #### класс BasketCardView extends Component(IBasketView)
 `constructor(container: HTMLElement, protected actions?: ICardActions)` - Принимает в конструктор контейнер и объект actions
@@ -311,42 +312,40 @@ export interface IOrderComplite {
 
 
 #### класс Form extends Component(IForm) 
-`constructor(container: HTMLElement)` - принимает в конструктор контейнер
+`constructor(container: HTMLElement, protected events: IEvents)` - принимает в конструктор контейнер и брокер событий
 
 Поля класса: 
 `formError: HTMLElement` - элмент разметки с текстом ошибки в форме
-
+`formButton: HTMLButtonElement;` - элемент разметки кнопки в форме
 
 Методы класса:
 `set error(value: string)` - добавляет текст ошибки в элемент разметки
+`set activeButton(value: boolean)` - делает кнопку не активной
 
 
-#### класс OrderForm extends Form(IOrderForm)
+#### класс FormOrder extends Form(IOrderForm)
 `constructor(container: HTMLElement, protected events: IEvents)` - принимает в конструктор контейнер и брокер событий
 
 Поля класса: 
 `formCardButton: HTMLButtonElement` - кнопка оплаты товара картой
 `formCashButton: HTMLButtonElement` - кнопка оплаты товара при получении
 `formInputAddres: HTMLInputElement` - строка ввода адреса доставки
-`formOrderButton: HTMLButtonElement` - кнопка перехода к следующей форме
 
 Методы класса:
 `set addres(value: string)` - добавляет значение адреса доставки в элемент разметки
 `set payment(value: TPayment)` - делает активной выбранную кнопку способа оплаты
-`set activeButton(value: boolean)` - делает кнопку 'Далее' активной в случает если все поля формы заполнены , и наоборот делает не активной если не выбран способ оплаты или не заполнен адрес доставки или оба эти поля
 
-#### класс ContactForm extends Form(IContactForm)
+#### класс FormContact extends Form(IContactForm)
 `constructor(container: HTMLElement, protected events: IEvents)` - принимает в конструктор контейнер и брокер событий
 
 Поля класса:
 `formInputEmail: HTMLInputElement` - строка ввода email покупателя
 `formInputPhone: HTMLInputElement` - сетрока ввода телефона покупателя
-`formButtonSubmit: HTMLButtonElement` - кнопка отправки товара
 
 Методы класса: 
 `set email(value: string)` - сеттер добавляет значение email в элемент разметки
 `set phone(value: string)` -  сеттер добавляет значение номера телефона в элемент разметки
-`set activeSubmitButton(value: boolean)` - делает кнопку 'Отправить' активной если все поля формы заполнены , и наоборот неактивной если оба поля или одно из них не заполнено
+
 
 #### класс OrderSuccess extends Component(IOrderSuccess)
 `constructor(container: HTMLElement, protected events: IEvents)` - принимает в конструктор контейнер и брокер событий
@@ -361,25 +360,25 @@ export interface IOrderComplite {
 ##### События 
 
 `value:changed` - событие изменения количества товаров в корзине
-`open:basket` - событие открытия корзины
+`open:basket` - событие открытия корзины-
 `card:select` - событие выбора карточки 
-`product:select` - событие выбора товара
-`product:unselect` - событие отказа от товара
-`itemsProducts:changed` - событие изменения данных колличества товаров в козине
-`product:save` - событие сохранения товара для отображения
-`close:window` - событие закрытия модального окна
-`product:delete` - событие удаления товара из корзины
-`checkout` -  событие оформления выбраных товаров
-`paymenеMethod:card` - событие выбора метода оплаты картой
-`paymenеMethod:cash` - событие выбора метода оплаты при получении 
-`buyer:changed-order` - событие изменения данных при оформлении заказа
-`inputAddressValue:changed` - событие изменения значения в инпуте адрес
-`buttonOrder:click` - событие клика по кнопке 'далее' в форме
-`inputEmail:changed` - событие изменения значения в инпуте Email
-`inputPhone:changed` - событие изменения значения в инпуте телефон
-`buyer:changed-contacts` - событие изменения данных покупателя при оформлении
-`buttonSubmit:click` - событие клика по кнопке отправить
-`order:completed` - событие окончания оформления заказа
+`product:select` - событие выбора товара-
+`modalCardView:click` - cсобытие клика по кнопке в карточке товара в модальном окне
+`product:unselect` - событие отказа от товара-
+`itemsProducts:changed` - событие изменения данных колличества товаров в козине-
+`product:save` - событие сохранения товара для отображения-
+`close:window` - событие закрытия модального окна-
+`product:delete` - событие удаления товара из корзины-
+`checkout` -  событие оформления выбраных товаров-
+`paymenеMethod:card` - событие выбора метода оплаты картой-
+`paymenеMethod:cash` - событие выбора метода оплаты при получении -
+`order:submit` - событие перехода к форме № 2-
+`inputAddressValue:changed` - событие изменения значения в инпуте адрес-
+`inputEmail:changed` - событие изменения значения в инпуте Email-
+`inputPhone:changed` - событие изменения значения в инпуте телефон-
+`buyer:changed-data` - событие изменения данных покупателя при оформлении-
+`contacts:submit` - событие отправки данных покупателя -
+`order:completed` - событие окончания оформления заказа -
 `items:changed` - событие изменения массива данных
 
 ### Призентор

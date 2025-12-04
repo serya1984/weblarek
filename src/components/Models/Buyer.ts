@@ -11,22 +11,22 @@ export class Buyer {
 
   setPayment(payment: TPayment) {
     this.buyerPayment = payment;
-    this.events.emit("buyer:changed-order");
+    this.events.emit("buyer:changed-data");
   }
 
   setEmail(email: string) {
     this.buyerEmail = email;
-    this.events.emit("buyer:changed-contacts");
+    this.events.emit("buyer:changed-data");
   }
 
   setPhone(phone: string) {
     this.buyerPhone = phone;
-    this.events.emit("buyer:changed-contacts");
+    this.events.emit("buyer:changed-data");
   }
 
   setAddress(address: string) {
     this.buyerAddress = address;
-    this.events.emit("buyer:changed-order");
+    this.events.emit("buyer:changed-data");
   }
 
   getData(): IBuyer {
@@ -62,5 +62,6 @@ export class Buyer {
     this.buyerEmail = "";
     this.buyerPhone = "";
     this.buyerAddress = "";
+    this.events.emit("buyer:changed-data")
   }
 }

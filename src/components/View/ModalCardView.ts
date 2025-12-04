@@ -1,12 +1,15 @@
 import { ICardActions } from "../../types";
 import { categoryMap, CDN_URL } from "../../utils/constants";
 import { ensureElement } from "../../utils/utils";
+import { IEvents } from "../base/Events";
 import { CardView } from "./CardView";
 
 export interface IModalCardView {
   image: string;
   category: string;
   description: string;
+  activeButton: boolean;
+  buttonText: string;
 }
 
 export class ModalCardView extends CardView<IModalCardView> {
@@ -15,7 +18,7 @@ export class ModalCardView extends CardView<IModalCardView> {
   protected cardDescription: HTMLElement;
   protected addButton: HTMLButtonElement;
 
-  constructor(container: HTMLElement) {
+  constructor(container: HTMLElement, protected events: IEvents) {
     super(container);
 
     this.cardImage = ensureElement(
@@ -28,6 +31,9 @@ export class ModalCardView extends CardView<IModalCardView> {
       ".card__button",
       this.container
     ) as HTMLButtonElement;
+  
+   this.addButton.addEventListener('click', () => this.events.emit('modalCardView:click'))
+  
   }
 
   set image(value: string) {
@@ -47,20 +53,14 @@ export class ModalCardView extends CardView<IModalCardView> {
     this.cardDescription.textContent = value;
   }
 
-  setButtonDisabled() {
-    this.addButton.textContent = "Недоступно";
-    this.addButton.setAttribute("disabled", "disabled");
-  }
-
-  setToBasketButton() {
-    this.addButton.textContent = "Купить";
-  }
-
-  setFromBasketButton() {
-    this.addButton.textContent = "Удалить из корзины";
+  set activeButton(value: boolean) {
+    this.addButton.disabled = !value;
   }
 
   setButtonListener(actions: ICardActions) {
     this.addButton.addEventListener("click", actions?.onClick);
+  }
+  set buttonText(value: string) {
+     this.addButton.textContent = value;
   }
 }

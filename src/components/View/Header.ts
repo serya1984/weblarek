@@ -29,6 +29,5 @@ export class Header extends Component<IHeaderData> {
 
   set counter(value: number) {
     this.headerCounter.textContent = String(value);
-    this.events.emit("value:changed");
   }
 }

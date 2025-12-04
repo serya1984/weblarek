@@ -10,10 +10,9 @@ interface IFormContacts {
 export class FormContacts extends Form<IFormContacts> {
   protected formInputEmail: HTMLInputElement;
   protected formInputPhone: HTMLInputElement;
-  protected formButtonSubmit: HTMLButtonElement;
 
   constructor(container: HTMLElement, protected events: IEvents) {
-    super(container);
+    super(container, events);
     this.formInputEmail = ensureElement(
       '[name="email"]',
       this.container
@@ -22,10 +21,6 @@ export class FormContacts extends Form<IFormContacts> {
       '[name="phone"]',
       this.container
     ) as HTMLInputElement;
-    this.formButtonSubmit = ensureElement(
-      ".button",
-      this.container
-    ) as HTMLButtonElement;
 
     this.formInputEmail.addEventListener("input", () =>
       this.events.emit("inputEmail:changed", {
@@ -37,10 +32,6 @@ export class FormContacts extends Form<IFormContacts> {
         input: this.formInputPhone.value,
       })
     );
-    this.formButtonSubmit.addEventListener("click", (evt) => {
-       evt.preventDefault()
-      this.events.emit("buttonSubmit:click")
-    });
   }
   set email(value: string) {
     this.formInputEmail.value = value;
@@ -48,13 +39,5 @@ export class FormContacts extends Form<IFormContacts> {
 
   set phone(value: string) {
     this.formInputPhone.value = value;
-  }
-
-  set activeSubmitButton(value: boolean) {
-    if (value === true) {
-      this.formButtonSubmit.removeAttribute("disabled");
-    } else {
-      this.formButtonSubmit.setAttribute("disabled", "disabled");
-    }
   }
 }

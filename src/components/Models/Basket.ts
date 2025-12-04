@@ -14,7 +14,7 @@ export class Basket {
 
   addProduct(product: IProduct) {
     this.itemsProducts.push(product);
-    this.events.emit("itemsProducts:changed", {countItems: this.itemsProducts.length});
+    this.events.emit("itemsProducts:changed");
   }
 
   removeProduct(id: string) {

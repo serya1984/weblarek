@@ -22,6 +22,7 @@ import { OrderSuccess } from "./components/View/OrderSuccess";
 const events = new EventEmitter();
 
 const products = new Products(events);
+const modalCardView = new ModalCardView(cloneTemplate("#card-preview"), events);
 const basket = new Basket(events);
 const buyer = new Buyer(events);
 const gallery = new Gallery(ensureElement(".page__wrapper"));
@@ -40,6 +41,9 @@ const dataApi = new DataApi(api);
 
 dataApi.getProducts().then((data) => {
   products.setItems(data);
+});
+
+events.on("items:changed", () => {
   const catalog = products.getItems().map((item) => {
     const card = new GalleryCardView(cloneTemplate("#card-catalog"), {
       onClick: () => events.emit("card:select", item),
@@ -54,36 +58,66 @@ events.on("card:select", (product: IProduct) => {
   products.setSavedItem(product);
 });
 
-function getModelCardContent(product: IProduct): HTMLElement {
-  const modalCardView = new ModalCardView(cloneTemplate("#card-preview"));
-
-  if (product.price === null) {
-    modalCardView.setButtonDisabled();
-  }
-
+events.on("modalCardView:click", () => {
+  const product = products.getSavedItem();
+  if (!product) return;
   if (basket.hasProduct(product.id)) {
-    modalCardView.setFromBasketButton();
+    events.emit("product:unselect");
+  } else {
+    events.emit("product:select");
   }
-  modalCardView.setButtonListener({
-    onClick: () => {
-      if (basket.hasProduct(product.id)) {
-        events.emit("product:unselect");
-      } else {
-        events.emit("product:select");
-      }
-    },
-  });
+});
 
-  events.on("itemsProducts:changed", () => {
-    if (basket.hasProduct(product.id)) {
-      modalCardView.setFromBasketButton();
-    } else {
-      modalCardView.setToBasketButton();
-    }
-  });
+function getModelCardContent(product: IProduct): HTMLElement {
+  let activeButton = false;
+  let buttonText = "Недоступно";
+  if (product.price !== null) {
+    buttonText = basket.hasProduct(product.id)
+      ? "Удалить из корзины"
+      : "Купить";
+    activeButton = true;
+  }
 
-  return modalCardView.render(product);
+  return modalCardView.render({
+    ...product,
+    activeButton,
+    buttonText,
+  });
 }
+
+events.on("itemsProducts:changed", () => {
+  const product = products.getSavedItem();
+
+  const countItems = basket.getItemsProducts().length;
+
+  basketView.activeButton = countItems > 0;
+
+  const counter = basket.getProductsCount();
+  header.render({ counter });
+  const totalPrice = basket.getTotalPrice();
+  const list = basket.getItemsProducts().map((item, index) => {
+    const basketCardItem = {
+      title: item.title,
+      price: item.price,
+      index: index + 1,
+    };
+
+    const card = new BasketCardView(cloneTemplate("#card-basket"), {
+      onClick: () => events.emit("product:delete", item),
+    });
+
+    return card.render(basketCardItem);
+  });
+
+  basketView.render({ list, totalPrice });
+
+  if (!product) return;
+  return modalCardView.render({
+    ...product,
+
+    buttonText: basket.hasProduct(product.id) ? "Удалить из корзины" : "Купить",
+  });
+});
 
 events.on("product:save", () => {
   const product = products.getSavedItem();
@@ -120,51 +154,23 @@ events.on("product:unselect", () => {
   }
 });
 
-events.on("itemsProducts:changed", () => {
-  const counter = basket.getProductsCount();
-  header.render({ counter });
-  const totalPrice = basket.getTotalPrice();
-  const list = basket.getItemsProducts().map((item, index) => {
-    const basketCardItem = {
-      title: item.title,
-      price: item.price,
-      index: index + 1,
-    };
-
-    const card = new BasketCardView(cloneTemplate("#card-basket"), {
-      onClick: () => events.emit("product:delete", item),
-    });
-
-    return card.render(basketCardItem);
-  });
-  basketView.render({ list, totalPrice });
-});
-
 events.on("product:delete", (item: IProduct) => {
   basket.removeProduct(item.id);
 });
 
-events.on("itemsProducts:changed", (args: { countItems: number }) => {
-  if (args.countItems === 1) {
-    basketView.enableButton();
-  } else if (args.countItems === 0) {
-    basketView.disableButton();
-  }
-});
-
 events.on("checkout", () => {
   const buyerData = buyer.getData();
-    const error = buyer.validate();
+  const error = buyer.validate();
   const errorString = error.buyerPayment + error.buyerAddress;
-   const isEmptyOrder = (buyerData.buyerAddress + buyerData.buyerPayment === '');
+  const isEmptyOrder = buyerData.buyerAddress + buyerData.buyerPayment === "";
 
   const formData = {
     payment: buyerData.buyerPayment,
     address: buyerData.buyerAddress,
-    error: isEmptyOrder ? '' : errorString,
-    activeButton: errorString === '',
+    error: isEmptyOrder ? "" : errorString,
+    activeButton: errorString === "",
   };
-  
+
   const content = formOrder.render(formData);
   modalWindow.render({ content });
 });
@@ -177,7 +183,7 @@ events.on("paymenеMethod:cash", () => {
   buyer.setPayment("CASH");
 });
 
-events.on("buyer:changed-order", () => {
+events.on("buyer:changed-data", () => {
   const buyerData = buyer.getData();
   const error = buyer.validate();
   const errorString = error.buyerPayment + error.buyerAddress;
@@ -195,18 +201,18 @@ events.on("inputAddressValue:changed", (data: { input: string }) => {
   buyer.setAddress(data.input);
 });
 
-events.on("buttonOrder:click", () => {
+events.on("order:submit", () => {
   const buyerData = buyer.getData();
-   const error = buyer.validate();
+  const error = buyer.validate();
 
   const errorString = error.buyerEmail + error.buyerPhone;
-  const isEmptyContacts = (buyerData.buyerEmail + buyerData.buyerPhone === '');
+  const isEmptyContacts = buyerData.buyerEmail + buyerData.buyerPhone === "";
 
   const formData = {
     email: buyerData.buyerEmail,
     phone: buyerData.buyerPhone,
-    error: isEmptyContacts ? '' : errorString,
-    activeButton: errorString === '',
+    error: isEmptyContacts ? "" : errorString,
+    activeButton: errorString === "",
   };
 
   const content = formContacts.render(formData);
@@ -221,7 +227,7 @@ events.on("inputPhone:changed", (data: { input: string }) => {
   buyer.setPhone(data.input);
 });
 
-events.on("buyer:changed-contacts", () => {
+events.on("buyer:changed-data", () => {
   const buyerData = buyer.getData();
   const error = buyer.validate();
 
@@ -231,12 +237,12 @@ events.on("buyer:changed-contacts", () => {
     email: buyerData.buyerEmail,
     phone: buyerData.buyerPhone,
     error: errorString,
-    activeSubmitButton: errorString === "",
+    activeButton: errorString === "",
   };
   formContacts.render(formData);
 });
 
-events.on("buttonSubmit:click", () => {
+events.on("contacts:submit", () => {
   const buyerData = buyer.getData();
   const itemsId = basket.getItemsProducts().map((item) => {
     return item.id;
@@ -253,6 +259,8 @@ events.on("buttonSubmit:click", () => {
     const total = {
       totalPrice: data.total,
     };
+    basket.clearBasket();
+    buyer.clearDataBuyer();
     const content = orderSuccess.render(total);
 
     modalWindow.render({ content });
@@ -260,7 +268,5 @@ events.on("buttonSubmit:click", () => {
 });
 
 events.on("order:completed", () => {
-  basket.clearBasket();
-  buyer.clearDataBuyer();
   modalWindow.closeModalWindow();
 });
